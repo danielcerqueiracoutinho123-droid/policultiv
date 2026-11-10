@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Policultiva</title>
+  <meta name="description" content="Sua terra, sua água e suas finanças em um só lugar">
+  <meta name="theme-color" content="#0f8a52">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23109249'/%3E%3Cg transform='translate(4 4)' fill='none' stroke='white' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z'/%3E%3Cpath d='M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12'/%3E%3C/g%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ================= Cabeçalho ================= -->
+  <header class="topbar">
+    <div class="container topbar__inner">
+      <div class="brand">
+        <div class="brand__logo" data-icon="leaf" aria-hidden="true"></div>
+        <div class="brand__text">
+          <h1 class="brand__title">Policultiva</h1>
+          <p class="brand__subtitle"><span id="greeting">Olá, daniel!</span> Sua terra, sua água e suas finanças em um só lugar</p>
+        </div>
+      </div>
+      <button class="glass-btn" type="button" data-action="open-settings" data-icon="settings" aria-label="Configurações" title="Configurações"></button>
+    </div>
+  </header>
+
+  <main class="container main">
+
+    <!-- ================= Abas ================= -->
+    <nav class="tabs" role="tablist" aria-label="Seções">
+      <button class="tab" role="tab" id="tabbtn-visao" aria-controls="tab-visao" data-tab="visao" data-icon="grid">Visão geral</button>
+      <button class="tab" role="tab" id="tabbtn-recomendacoes" aria-controls="tab-recomendacoes" data-tab="recomendacoes" data-icon="sparkles">Recomendações</button>
+      <button class="tab" role="tab" id="tabbtn-irrigacao" aria-controls="tab-irrigacao" data-tab="irrigacao" data-icon="droplets">Irrigação</button>
+      <button class="tab" role="tab" id="tabbtn-dispositivos" aria-controls="tab-dispositivos" data-tab="dispositivos" data-icon="wifi">Dispositivos</button>
+      <button class="tab" role="tab" id="tabbtn-financeiro" aria-controls="tab-financeiro" data-tab="financeiro" data-icon="wallet">Financeiro</button>
+      <button class="tab" role="tab" id="tabbtn-culturas" aria-controls="tab-culturas" data-tab="culturas" data-icon="sprout">Culturas</button>
+    </nav>
+
+    <!-- ================= Visão geral ================= -->
+    <section class="panel" id="tab-visao" role="tabpanel" aria-labelledby="tabbtn-visao">
+      <div class="stats" id="stats"></div>
+
+      <div class="section-head">
+        <h2>Talhões e culturas</h2>
+        <div class="actions">
+          <button class="btn btn--outline" type="button" data-action="new-crop" data-icon="plus">Cultura</button>
+          <button class="btn btn--primary" type="button" data-action="new-plot" data-icon="plus">Talhão</button>
+        </div>
+      </div>
+
+      <div class="plot-grid" id="plotGrid"></div>
+    </section>
+
+    <!-- ================= Recomendações ================= -->
+    <section class="panel" id="tab-recomendacoes" role="tabpanel" aria-labelledby="tabbtn-recomendacoes" hidden>
+      <div class="hero">
+        <div class="hero__icon" data-icon="sparkles" aria-hidden="true"></div>
+        <div class="hero__text">
+          <h2>Recomendações inteligentes</h2>
+          <p>O melhor dia para plantar, cultivar, regar e drenar</p>
+        </div>
+        <button class="btn btn--light" type="button" id="btnGenerate" data-icon="refresh"><span class="btn__label">Gerar recomendações</span></button>
+      </div>
+
+      <div class="companions" id="companions"></div>
+      <div id="recoResult" aria-live="polite"></div>
+    </section>
+
+    <!-- ================= Irrigação ================= -->
+    <section class="panel" id="tab-irrigacao" role="tabpanel" aria-labelledby="tabbtn-irrigacao" hidden>
+      <div class="section-head">
+        <p class="status-line" id="irrigationStatus"></p>
+        <button class="btn btn--primary" type="button" data-action="new-crop" data-icon="plus">Nova cultura</button>
+      </div>
+      <div id="irrigationGrid"></div>
+    </section>
+
+    <!-- ================= Dispositivos ================= -->
+    <section class="panel" id="tab-dispositivos" role="tabpanel" aria-labelledby="tabbtn-dispositivos" hidden>
+      <div class="info-box">
+        <span class="info-box__icon" data-icon="info" aria-hidden="true"></span>
+        <div>
+          <p>Conecte placas <strong>ESP32</strong> na sua rede Wi-Fi e cadastre o IP local de cada uma.</p>
+          <p>O firmware do ESP32 deve expor: <code>GET /status</code> (retorna <em>moisture</em>, <em>battery</em> e <em>relay</em>) e <code>POST /relay</code> (liga/desliga o relé).</p>
+          <p>Use o app nativo ou acesse pela rede local em HTTP — navegadores bloqueiam requisições HTTP a partir de páginas HTTPS.</p>
+        </div>
+      </div>
+
+      <div class="section-head">
+        <h2 class="with-icon"><span class="text-sky" data-icon="wifi" aria-hidden="true"></span>Dispositivos do Solo <span class="count" id="deviceCount">(0)</span></h2>
+        <div class="actions">
+          <button class="btn btn--outline" type="button" id="btnRefreshAll" data-action="refresh-all-devices" data-icon="refresh" hidden>Atualizar todos</button>
+          <button class="btn btn--primary" type="button" data-action="new-device" data-icon="plus">Conectar dispositivos</button>
+        </div>
+      </div>
+
+      <div id="deviceList"></div>
+    </section>
+
+    <!-- ================= Financeiro ================= -->
+    <section class="panel" id="tab-financeiro" role="tabpanel" aria-labelledby="tabbtn-financeiro" hidden>
+      <div class="finance">
+        <div class="finance__side">
+          <div class="mini-stats" id="financeStats"></div>
+
+          <form class="card form" id="txForm" novalidate>
+            <h3>Registrar movimentação</h3>
+
+            <label class="field">
+              <span>Descrição</span>
+              <input name="desc" type="text" placeholder="Ex: Venda de tomate" autocomplete="off">
+            </label>
+
+            <div class="row">
+              <label class="field">
+                <span>Tipo</span>
+                <select name="type">
+                  <option value="despesa">Despesa</option>
+                  <option value="receita">Receita</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Valor (R$)</span>
+                <input name="value" type="number" min="0" step="0.01" inputmode="decimal">
+              </label>
+            </div>
+
+            <div class="row">
+              <label class="field">
+                <span>Categoria</span>
+                <input name="category" type="text" placeholder="Ex: Sementes" autocomplete="off">
+              </label>
+              <label class="field">
+                <span>Data</span>
+                <input name="date" type="date">
+              </label>
+            </div>
+
+            <label class="field">
+              <span>Cultura (opcional)</span>
+              <select name="cropId" id="txCrop">
+                <option value="">Nenhuma</option>
+              </select>
+            </label>
+
+            <button class="btn btn--primary btn--block" type="submit">Adicionar</button>
+          </form>
+        </div>
+
+        <div class="card statement">
+          <h3>Extrato</h3>
+          <ul class="statement__list" id="statement"></ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= Culturas ================= -->
+    <section class="panel" id="tab-culturas" role="tabpanel" aria-labelledby="tabbtn-culturas" hidden>
+      <div class="section-head">
+        <p class="muted">Veja o que está plantado em cada talhão.</p>
+        <button class="btn btn--primary" type="button" data-action="new-crop" data-icon="plus">Plantar cultura</button>
+      </div>
+      <div id="cropsByPlot"></div>
+    </section>
+
+  </main>
+
+  <!-- ================= Modal ================= -->
+  <div class="modal" id="modal" hidden>
+    <div class="modal__backdrop" data-close></div>
+    <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal__head">
+        <h3 id="modalTitle"></h3>
+        <button class="icon-btn" type="button" data-close data-icon="x" aria-label="Fechar"></button>
+      </div>
+      <div class="modal__body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <input type="file" id="importFile" accept="application/json,.json" hidden>
+  <div class="toasts" id="toasts" aria-live="polite"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
